@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 /**
  * Send MySQL runtime info to a Graylog Server via UDP socket.
@@ -8,7 +7,7 @@
  * "conf/variables-abs" / "conf/variables-diff" with the variables you'd like to send
  * @author  Stefan Moises <moises@shoptimax.de>
  */
-$DIR=dirname(__FILE__);
+$DIR = dirname(__FILE__);
 
 // read settings directly into variables
 $settings = parse_ini_file($DIR . '/conf/settings.ini');
@@ -20,7 +19,7 @@ foreach ($settings as $key => $setting) {
 $VERSION = "1.0";
 $MESSAGE = "MySQL Status";
 $HOST = gethostname();
-$TIMESTAMP = time();
+$TIMESTAMP = date(time());
 $LEVEL = 1;
 
 $STATUS_CMD = "SHOW GLOBAL STATUS";
@@ -97,11 +96,11 @@ while ($row = $stmt->fetch()) {
 // Close connection
 $pdo = null;
 
-$filename1 = $DIR . '/status.last';
+$filename1 = $DIR . '/status/status.last';
 if (!file_exists($filename1)) {
     writeToFile($filename1, $GLOBAL_STATUS_RES);
 } else {
-    $filename2 = $DIR . '/status.current';
+    $filename2 = $DIR . '/status/status.current';
     writeToFile($filename2, $GLOBAL_STATUS_RES);
 
     $LAST_VALS = parse_ini_file($filename1);
@@ -110,9 +109,8 @@ if (!file_exists($filename1)) {
     $MSG = "{\"version\": \"$VERSION\"";
     $MSG .= ",\"host\":\"$HOST\"";
     $MSG .= ",\"short_message\":\"$MESSAGE\"";
-    $MSG .= ",\"full_message\":\"\"";
-    $MSG .= ",\"timestamp\":\"$TIMESTAMP\"";
-    $MSG .= ",\"level\":\"$LEVEL\"";
+    $MSG .= ",\"timestamp\":$TIMESTAMP";
+    $MSG .= ",\"level\":$LEVEL";
 
     $UPTIME_LAST = $LAST_VALS['Uptime'];
     $UPTIME_CURR = $CURRENT_VALS['Uptime'];
@@ -139,9 +137,12 @@ if (!file_exists($filename1)) {
 
     $MSG .= "}";
     // send to Graylog
-    sendViaSocket($GRAYLOG_SERVER, $GRAYLOG_PORT, $MSG);
-    if ($DEBUG) {
-        echo "\n" . $MSG . "\n";
+    if (!$OUTPUT_JSON) {
+        sendViaSocket($GRAYLOG_SERVER, $GRAYLOG_PORT, $MSG);
+    }
+    if ($DEBUG || $OUTPUT_JSON) {
+        header('Content-Type: application/json');
+        echo $MSG;
     }
     // move files
     unlink($filename1);
