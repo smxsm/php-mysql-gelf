@@ -38,3 +38,4 @@ If you want to send the messages via UDP socket, set `OUTPUT_JSON = 0`. You can 
 ## Polling the script from outside
 
 If you want to poll the script from your remote Graylog server, set `OUTPUT_JSON = 1` and just put the folder in some directory which is reachable via URL from outside (you should secure it e.g. via Basic Auth or something!). In your Graylog input you can set the frequency below one minute, so you could call it e.g. every 10 seconds.
+For polling, you can use my [Graylog Input Plugin](https://github.com/smxsm/graylog-json-remote-poll).
