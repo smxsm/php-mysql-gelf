@@ -22,6 +22,7 @@ $HOST = gethostname();
 $TIMESTAMP = date(time());
 $LEVEL = 1;
 
+# global status query
 $STATUS_CMD = "SHOW GLOBAL STATUS";
 
 $VARFILE_ABS = $DIR . '/conf/variables-abs';
@@ -90,9 +91,22 @@ try {
 $stmt = $pdo->prepare($STATUS_CMD);
 $stmt->execute();
 $GLOBAL_STATUS_RES = '';
+$Innodb_buffer_pool_reads = 0;
+$Innodb_buffer_pool_read_requests = 0;
 while ($row = $stmt->fetch()) {
     $GLOBAL_STATUS_RES .= $row['Variable_name'] . " = \"" . $row['Value'] . "\"\n";
+    if ($row['Variable_name'] == 'Innodb_buffer_pool_reads') {
+        $Innodb_buffer_pool_reads = $row['Value'];
+    }
+    if ($row['Variable_name'] == 'Innodb_buffer_pool_read_requests') {
+        $Innodb_buffer_pool_read_requests = $row['Value'];
+    }
 }
+if ($Innodb_buffer_pool_read_requests > 0) {
+    $Innodb_buffer_pool_efficiency = 100-(($Innodb_buffer_pool_reads / $Innodb_buffer_pool_read_requests) * 100);
+    $GLOBAL_STATUS_RES .=  "Innodb_buffer_pool_efficiency = \"" . $Innodb_buffer_pool_efficiency . "\"\n";
+}
+
 // Close connection
 $pdo = null;
 

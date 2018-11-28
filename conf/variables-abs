@@ -1,6 +1,7 @@
 Innodb_buffer_pool_read_requests
 Innodb_buffer_pool_reads
 Innodb_buffer_pool_write_requests
+Innodb_buffer_pool_efficiency
 Max_used_connections
 Open_files
 Open_streams

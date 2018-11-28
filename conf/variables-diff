@@ -19,6 +19,9 @@ Created_tmp_tables
 Delayed_errors
 Delayed_insert_threads
 Delayed_writes
+Innodb_buffer_pool_read_requests
+Innodb_buffer_pool_reads
+Innodb_buffer_pool_write_requests
 Slow_queries
 Table_locks_immediate
 Table_locks_waited
