@@ -105,6 +105,8 @@ while ($row = $stmt->fetch()) {
 if ($Innodb_buffer_pool_read_requests > 0) {
     $Innodb_buffer_pool_efficiency = 100-(($Innodb_buffer_pool_reads / $Innodb_buffer_pool_read_requests) * 100);
     $GLOBAL_STATUS_RES .=  "Innodb_buffer_pool_efficiency = \"" . $Innodb_buffer_pool_efficiency . "\"\n";
+} else {
+    $GLOBAL_STATUS_RES .=  "Innodb_buffer_pool_efficiency = \"-1\"\n";
 }
 
 // Close connection
